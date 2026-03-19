@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, User, ShoppingCart, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/useSession";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import SearchOverlay from "./SearchOverlay";
 
 const navLinks = [
@@ -22,9 +23,14 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { isAdmin } = useIsAdmin();
 
   // Mock cart count - will be replaced with Zustand state
   const cartItemCount = 0;
+
+  // Get account link based on admin status
+  const accountLink = session ? (isAdmin ? "/admin" : "/account") : "/sign-in";
+  const accountLabel = session ? (isAdmin ? "Admin" : "Account") : "Sign In";
 
   const isActive = (href: string) => {
     return pathname === href || pathname.startsWith(href + "/");
@@ -86,8 +92,8 @@ export default function Navbar() {
                 <Search className="h-5 w-5" />
               </button>
               <Link
-                href={session ? "/account" : "/sign-in"}
-                aria-label={session ? "Account" : "Sign In"}
+                href={accountLink}
+                aria-label={accountLabel}
                 className="hidden sm:block p-2 hover:text-evol-red transition-colors"
               >
                 <User className="h-5 w-5" />
@@ -145,11 +151,11 @@ export default function Navbar() {
                 </Link>
               ))}
               <Link
-                href={session ? "/account" : "/sign-in"}
+                href={accountLink}
                 onClick={() => setMobileMenuOpen(false)}
                 className="font-sans text-2xl uppercase tracking-widest text-evol-dark-grey hover:text-evol-red transition-colors"
               >
-                {session ? "Account" : "Sign In"}
+                {accountLabel}
               </Link>
             </div>
           </motion.div>

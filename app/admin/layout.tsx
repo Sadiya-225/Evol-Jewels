@@ -89,29 +89,35 @@ export default function AdminLayout({
   };
 
   return (
-    <div className="min-h-screen bg-white flex">
-      {/* Mobile sidebar toggle */}
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-evol-light-grey rounded-sm"
-        aria-label="Toggle sidebar"
-      >
-        {sidebarOpen ? (
-          <X className="h-5 w-5 text-evol-dark-grey" />
-        ) : (
-          <Menu className="h-5 w-5 text-evol-dark-grey" />
-        )}
-      </button>
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row">
+      {/* Mobile header */}
+      <div className="lg:hidden sticky top-0 z-50 h-16 bg-evol-light-grey border-b border-evol-grey flex items-center justify-between px-4">
+        <Link href="/admin" className="font-serif text-xl text-evol-dark-grey">
+          Admin Panel
+        </Link>
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="p-2 hover:bg-evol-grey/50 rounded-sm transition-colors"
+          aria-label="Toggle sidebar"
+        >
+          {sidebarOpen ? (
+            <X className="h-5 w-5 text-evol-dark-grey" />
+          ) : (
+            <Menu className="h-5 w-5 text-evol-dark-grey" />
+          )}
+        </button>
+      </div>
 
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:static inset-y-0 left-0 z-40 w-64 bg-evol-light-grey border-r border-evol-grey flex flex-col transition-transform lg:translate-x-0",
+          "fixed lg:static left-0 z-40 w-64 bg-evol-light-grey border-r border-evol-grey flex flex-col transition-transform lg:translate-x-0",
+          "top-16 bottom-0 lg:top-0 lg:inset-y-0", // Account for mobile header
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Logo/Title */}
-        <div className="h-16 flex items-center justify-center border-b border-evol-grey">
+        {/* Logo/Title - hidden on mobile since we have header */}
+        <div className="hidden lg:flex h-16 items-center justify-center border-b border-evol-grey">
           <Link href="/admin" className="font-serif text-xl text-evol-dark-grey">
             Admin Panel
           </Link>
@@ -141,7 +147,7 @@ export default function AdminLayout({
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-evol-grey">
+        <div className="p-4 border-t border-evol-grey mt-auto mb-15">
           <div className="px-4 py-2 mb-2">
             <p className="font-sans text-xs text-evol-metallic uppercase tracking-wider">
               Signed in as
@@ -152,31 +158,25 @@ export default function AdminLayout({
           </div>
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-sm font-sans text-sm text-evol-dark-grey hover:bg-evol-grey/50 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2 rounded-sm font-sans text-sm text-evol-dark-grey hover:bg-evol-grey/50 transition-colors"
           >
             <LogOut className="h-5 w-5" />
             Sign Out
           </button>
-          <Link
-            href="/"
-            className="block mt-2 px-4 py-2 font-sans text-xs text-evol-metallic hover:text-evol-dark-grey transition-colors text-center"
-          >
-            Back to Store
-          </Link>
         </div>
       </aside>
 
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/20 z-30 lg:hidden"
+          className="fixed inset-0 top-16 bg-black/20 z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Main content */}
-      <main className="flex-1 min-h-screen">
-        <div className="p-6 lg:p-8">{children}</div>
+      <main className="flex-1 lg:min-h-screen">
+        <div className="p-4 sm:p-6 lg:p-8">{children}</div>
       </main>
     </div>
   );

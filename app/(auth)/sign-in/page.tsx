@@ -29,7 +29,7 @@ export default function SignInPage() {
       // First, request magic link (this stores the token for combined email)
       await authClient.signIn.magicLink({
         email,
-        callbackURL: "/account",
+        callbackURL: "/auth-callback",
       });
 
       // Then, send OTP (this will trigger the combined email with both)
@@ -62,8 +62,14 @@ export default function SignInPage() {
         throw new Error(result.error.message || "Verification failed");
       }
 
-      // Redirect to account page
-      window.location.href = "/account";
+      // Check if user is admin and redirect accordingly
+      try {
+        const adminCheck = await fetch("/api/auth/check-admin");
+        const adminData = await adminCheck.json();
+        window.location.href = adminData.isAdmin ? "/admin" : "/account";
+      } catch {
+        window.location.href = "/account";
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Invalid code. Please try again.";
       setError(message);
@@ -78,7 +84,7 @@ export default function SignInPage() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/account",
+        callbackURL: "/auth-callback",
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to sign in with Google";

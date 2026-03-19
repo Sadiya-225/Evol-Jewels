@@ -19,13 +19,19 @@ interface SendEmailParams {
 }
 
 export async function sendEmail({ to, subject, html, text }: SendEmailParams): Promise<void> {
-  await transporter.sendMail({
-    from: '"Evol Jewels" <sadiya.siddiqui@evoljewels.com>',
-    to,
-    subject,
-    html,
-    text,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: '"Evol Jewels" <sadiya.siddiqui@evoljewels.com>',
+      to,
+      subject,
+      html,
+      text,
+    });
+    console.log("Email Sent Successfully:", info.messageId);
+  } catch (error) {
+    console.error("Failed to Send Email:", error);
+    throw error;
+  }
 }
 
 // Brand colors

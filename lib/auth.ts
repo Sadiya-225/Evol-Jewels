@@ -8,9 +8,20 @@ import * as schema from "@/db/schema";
 // Store pending magic link tokens to combine with OTP emails
 const pendingMagicLinks = new Map<string, { token: string; url: string }>();
 
+// Normalize URL - remove trailing slash
+const normalizeUrl = (url: string | undefined) => url?.replace(/\/$/, "");
+
+const baseURL = normalizeUrl(process.env.BETTER_AUTH_URL) ||
+                normalizeUrl(process.env.NEXT_PUBLIC_APP_URL) ||
+                "http://localhost:3000";
+
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL,
+  baseURL,
   secret: process.env.BETTER_AUTH_SECRET,
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://evol-jewels.vercel.app",
+  ],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
